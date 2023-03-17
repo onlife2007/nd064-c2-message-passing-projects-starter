@@ -16,7 +16,7 @@ TOPIC_NAME = os.environ["TOPIC_NAME"]
 KAFKA_SERVER = os.environ["KAFKA_SERVER"]
 
 logging.basicConfig(level=logging.WARNING)
-logger = logging.getLogger("udaconnect-api")
+logger = logging.getLogger("udaconnect-location-api")
 
 class LocationService:
     @staticmethod
@@ -38,15 +38,6 @@ class LocationService:
             logger.warning(f"Unexpected data format in payload: {validation_results}")
             raise Exception(f"Invalid payload: {validation_results}")
 
-        # new_location = Location()
-        # new_location.person_id = location["person_id"]
-        # new_location.creation_time = location["creation_time"]
-        # new_location.coordinate = ST_Point(location["latitude"], location["longitude"])    
-        # db.session.add(new_location)
-        # db.session.commit()
-
         kafka_data = json.dumps(location).encode()
         kafka_producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER)
         kafka_producer.send(TOPIC_NAME, kafka_data)
-
-        # return new_location

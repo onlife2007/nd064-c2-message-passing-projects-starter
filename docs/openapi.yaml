@@ -1,0 +1,74 @@
+openapi: 3.0.0
+paths:
+  "/api/locations":
+    post:
+      responses:
+        '202':
+          description: Accepted
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+        description: Location to add
+      operationId: post_location_resource
+      tags:
+      - UdaConnect
+  "/api/locations/{location_id}":
+    parameters:
+    - in: path
+      description: Unique ID for a given Location
+      name: location_id
+      required: true
+      schema:
+        type: integer
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+      operationId: get_location_resource
+      tags:
+      - UdaConnect
+info:
+  title: UdaConnect Locations API
+  version: 1.0.0
+tags:
+- name: UdaConnect
+  description: Connections via geolocation.
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/PHAMQUAN_1/locations_api/1.0.0
+components:
+  schemas:
+    Location:
+      type: object
+      required:
+        - id
+        - created_by
+        - status
+        - created_at
+        - equipment
+      properties:
+        id:
+          type: integer
+          example: 123
+          description: location id
+        person_id:
+          type: integer
+          example: 99
+        longitude:
+          type: string
+          example: "37.55363"
+        lititude:
+          type: string
+          example: "-122.290883"
+        created_time:
+          type: string
+          format: datetime
+          example: 2023-03-09 10:00:00
+          description: isoformat_timestamp

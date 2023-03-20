@@ -31,14 +31,14 @@ spec:
         service: udaconnect-app
     spec:
       containers:
-      - image: onlife2007/udaconnect-app:v0.0.1
+      - image: onlife2007/udaconnect-app:v1.0.0
         name: udaconnect-app
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "128Mi"
+            memory: "256Mi"
             cpu: "64m"
           limits:
-            memory: "256Mi"
+            memory: "512Mi"
             cpu: "256m"
       restartPolicy: Always

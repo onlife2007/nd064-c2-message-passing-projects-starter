@@ -2,3 +2,6 @@ Separate the Location API from People API and use Kafka as a buffer to ingest da
 - Location API and People API are separate domains and should be split out into different microservices
 - The large volume of location data will be ingested from mobile devices, so I can autoscale the Location API based on the load
 - We should ingest the large volume of location data into Kafka (as an event stream) and processing later to input into the database. It helps to prevent bottlenecks and overload in the database and Location API
+Separate the Connection API from Person API and establish GRPC call between Connection API and Person GRPC service
+- Each microservice has separated biz domain
+- Connection API has complex biz, we improve latency by implement Grpc call between Connection API dn Person Grpc service to get all the persons

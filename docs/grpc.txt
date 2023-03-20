@@ -1,0 +1,33 @@
+GRPC endpoint hosted in Person GRPC service
+-----------------
+syntax = "proto3";
+
+message PersonMessage {
+  int32 id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string company_name = 4;
+}
+
+message Empty {
+
+}
+
+message PersonMessageList {
+  repeated PersonMessage persons = 1;
+}
+
+service PersonService {
+    rpc RetrieveAll(Empty) returns (PersonMessageList);
+}
+-----------------
+Sample request from Connection API to Person GRPC service
+import grpc
+import person_pb2
+improt person_pb2_grpc
+
+GRPC_SERVER = os.environ["GRPC_SERVER"]
+channel = grpc.insecure_channel(f"{GRPC_SERVER}:5005")
+stub = person_pb2_grpc.PersonServiceStub(channel)
+
+response = stub.RetrieveAll(person_pb2.Empty())

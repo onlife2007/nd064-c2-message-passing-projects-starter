@@ -1,5 +1,76 @@
 openapi: 3.0.0
 paths:
+  "/api/persons":
+    post:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+        description: Person to add
+      operationId: post_person_resource
+      tags:
+      - UdaConnect Person API
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+      operationId: get_list_person_resource
+      tags:
+      - UdaConnect Person API
+  "/api/persons/{person_id}":
+    parameters:
+    - in: path
+      description: Unique ID for a given person
+      name: person_id
+      required: true
+      schema:
+        type: integer
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+      operationId: get_person_resource
+      tags:
+      - UdaConnect Person API
+  "/api/persons/{person_id}/connection":
+    parameters:
+    - in: path
+      description: Unique ID for a given person
+      name: person_id
+      required: true
+      schema:
+        type: integer
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Connection'
+      operationId: get_connection_person_resource
+      tags:
+      - UdaConnect Connection API
   "/api/locations":
     post:
       responses:
@@ -13,7 +84,7 @@ paths:
         description: Location to add
       operationId: post_location_resource
       tags:
-      - UdaConnect
+      - UdaConnect Location API
   "/api/locations/{location_id}":
     parameters:
     - in: path
@@ -32,13 +103,14 @@ paths:
                 $ref: '#/components/schemas/Location'
       operationId: get_location_resource
       tags:
-      - UdaConnect
+      - UdaConnect Location API
 info:
-  title: UdaConnect Locations API
+  title: UdaConnect APIs
   version: 1.0.0
 tags:
-- name: UdaConnect
-  description: Connections via geolocation.
+- name: UdaConnect Person API
+- name: UdaConnect Connection API
+- name: UdaConnect Location API
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
@@ -47,12 +119,6 @@ components:
   schemas:
     Location:
       type: object
-      required:
-        - id
-        - created_by
-        - status
-        - created_at
-        - equipment
       properties:
         id:
           type: integer
@@ -72,3 +138,31 @@ components:
           format: datetime
           example: 2023-03-09 10:00:00
           description: isoformat_timestamp
+    Person:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+          description: location id
+        person_id:
+          type: integer
+          example: 99
+        longitude:
+          type: string
+          example: "37.55363"
+        lititude:
+          type: string
+          example: "-122.290883"
+        created_time:
+          type: string
+          format: datetime
+          example: 2023-03-09 10:00:00
+          description: isoformat_timestamp
+    Connection:
+      type: object
+      properties:
+        location:
+          $ref: '#/components/schemas/Location'
+        person:
+          $ref: '#/components/schemas/Person'

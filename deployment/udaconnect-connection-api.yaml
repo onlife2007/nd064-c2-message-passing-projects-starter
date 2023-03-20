@@ -2,36 +2,37 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    service: udaconnect-kafka-consumer
-  name: udaconnect-kafka-consumer
+    service: udaconnect-connection-api
+  name: udaconnect-connection-api
 spec:
   ports:
   - name: "5000"
-    port: 3111
-    targetPort: 3111
+    port: 5000
+    targetPort: 5000
+    nodePort: 30004
   selector:
-    service: udaconnect-kafka-consumer
-  type: ClusterIP
+    service: udaconnect-connection-api
+  type: NodePort
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    service: udaconnect-kafka-consumer
-  name: udaconnect-kafka-consumer
+    service: udaconnect-connection-api
+  name: udaconnect-connection-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service: udaconnect-kafka-consumer
+      service: udaconnect-connection-api
   template:
     metadata:
       labels:
-        service: udaconnect-kafka-consumer
+        service: udaconnect-connection-api
     spec:
       containers:
-      - image: onlife2007/udaconnect-kafka-consumer:v1.0.0
-        name: udaconnect-kafka-consumer
+      - image: onlife2007/udaconnect-connection-api:v1.0.0
+        name: udaconnect-connection-api
         imagePullPolicy: Always
         env:
         - name: DB_USERNAME
@@ -59,14 +60,9 @@ spec:
             configMapKeyRef:
               name: db-env
               key: DB_PORT
-        - name: TOPIC_NAME
+        - name: GRPC_SERVER
           valueFrom:
             configMapKeyRef:
-              name: kafka-env
-              key: TOPIC_NAME
-        - name: KAFKA_SERVER
-          valueFrom:
-            configMapKeyRef:
-              name: kafka-env
-              key: KAFKA_SERVER
+              name: grpc-env
+              key: GRPC_SERVER
       restartPolicy: Always

@@ -111,6 +111,8 @@ These pages should also load on your web browser:
 * `http://localhost:30003/api/` - Base path for Location API
 * `http://localhost:30004/api/` - Base path for Connection API
 
+For Location API enpoints, you should use DB client (DBeaver) to connect to Postgres DB and verify the data in Location table
+
 #### Deployment Note
 You may notice the odd port numbers being served to `localhost`. [By default, Kubernetes services are only exposed to one another in an internal network](https://kubernetes.io/docs/concepts/services-networking/service/). This means that `udaconnect-app` and `udaconnect-api` can talk to one another. For us to connect to the cluster as an "outsider", we need to a way to expose these services to `localhost`.
 

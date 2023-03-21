@@ -18,6 +18,7 @@ To do so, ***you will refactor this application into a microservice architecture
 * [Vagrant](https://www.vagrantup.com/) - Tool for managing virtual deployed environments
 * [VirtualBox](https://www.virtualbox.org/) - Hypervisor allowing you to run multiple operating systems
 * [K3s](https://k3s.io/) - Lightweight distribution of K8s to easily develop against a local cluster
+* [Apache Kafka](https://kafka.apache.org/intro) - Distributed message broker
 
 ## Running the app
 The project has been set up such that you should be able to have the project up and running with Kubernetes.
@@ -29,6 +30,7 @@ We will be installing the tools that we'll need to use for getting our environme
 3. [Set up `kubectl`](https://rancher.com/docs/rancher/v2.x/en/cluster-admin/cluster-access/kubectl/)
 4. [Install VirtualBox](https://www.virtualbox.org/wiki/Downloads) with at least version 6.0
 5. [Install Vagrant](https://www.vagrantup.com/docs/installation) with at least version 2.0
+6. Apple Silicon Architecture
 
 ### Environment Setup
 To run the application, you will need a K8s cluster running locally and to interface with it via `kubectl`. We will be using Vagrant with VirtualBox to run K3s.
@@ -79,23 +81,35 @@ Afterwards, you can test that `kubectl` works by running a command like `kubectl
 1. `kubectl apply -f deployment/db-configmap.yaml` - Set up environment variables for the pods
 2. `kubectl apply -f deployment/db-secret.yaml` - Set up secrets for the pods
 3. `kubectl apply -f deployment/postgres.yaml` - Set up a Postgres database running PostGIS
-4. `kubectl apply -f deployment/udaconnect-api.yaml` - Set up the service and deployment for the API
+4. `kubectl apply -f deployment/udaconnect-api.yaml` - Set up the service and deployment for the Person API
 5. `kubectl apply -f deployment/udaconnect-app.yaml` - Set up the service and deployment for the web app
 6. `sh scripts/run_db_command.sh <POD_NAME>` - Seed your database against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`)
+7. `kubectl apply -f deployment/grpc-configmap.yaml` - Set up environment variables for the grpc
+8. `kubectl apply -f deployment/kafka-configmap.yaml` - Set up environment variables for the kafka
+9. `kubectl apply -f deployment/kafka-zookeeper` - Set up kafka zookeeper
+10. `kubectl apply -f deployment/kafka-broker` - Set up kafka broker
+11. `kubectl apply -f deployment/connection-api` - Set up Connection API
+12. `kubectl apply -f deployment/location-api` - Set up Location API
+13. `kubectl apply -f deployment/kafka-consumer` - Set up kafk consumer for location data
+14. `kubectl apply -f deployment/person-grpc` - Set up Person GRPC server
 
 Manually applying each of the individual `yaml` files is cumbersome but going through each step provides some context on the content of the starter project. In practice, we would have reduced the number of steps by running the command against a directory to apply of the contents: `kubectl apply -f deployment/`.
 
-Note: The first time you run this project, you will need to seed the database with dummy data. Use the command `sh scripts/run_db_command.sh <POD_NAME>` against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`). Subsequent runs of `kubectl apply` for making changes to deployments or services shouldn't require you to seed the database again!
+Note: 
+* The first time you run this project, you will need to seed the database with dummy data. Use the command `sh scripts/run_db_command.sh <POD_NAME>` against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`). Subsequent runs of `kubectl apply` for making changes to deployments or services shouldn't require you to seed the database again!
+* In some situation, you need to make sure the kafka zookeeper must be deployed success before deploy kafka broker by running the `deployment/kafka-zookeeper` before `deployment/kafka-broker`
+* The deployments use images build for OS/ARCH `linux/arm64/v8`, so make sure you have suitable device to run this app (Apple Silicon M1/M1x/...)
 
 ### Verifying it Works
-Once the project is up and running, you should be able to see 3 deployments and 3 services in Kubernetes:
-`kubectl get pods` and `kubectl get services` - should both return `udaconnect-app`, `udaconnect-api`, and `postgres`
+Once the project is up and running, you should be able to see 9 deployments and 9 services in Kubernetes:
+`kubectl get pods` and `kubectl get services` - should both return `udaconnect-app`, `udaconnect-api`, `postgres`, `zookeeper`, `broker`, `udaconnect-connection-api`, `udaconnect-kafka-consumer`, `udaconnect-location-api`, and `udaconnect-person-grpc`
 
 
 These pages should also load on your web browser:
-* `http://localhost:30001/` - OpenAPI Documentation
-* `http://localhost:30001/api/` - Base path for API
 * `http://localhost:30000/` - Frontend ReactJS Application
+* `http://localhost:30001/api/` - Base path for Person API
+* `http://localhost:30003/api/` - Base path for Location API
+* `http://localhost:30004/api/` - Base path for Connection API
 
 #### Deployment Note
 You may notice the odd port numbers being served to `localhost`. [By default, Kubernetes services are only exposed to one another in an internal network](https://kubernetes.io/docs/concepts/services-networking/service/). This means that `udaconnect-app` and `udaconnect-api` can talk to one another. For us to connect to the cluster as an "outsider", we need to a way to expose these services to `localhost`.
